@@ -1,4 +1,5 @@
 import CustomContext from "../../../common/types/context";
+import { IUserRegister } from "../../../common/types/user.types";
 import UserModel, { IUser } from "../model/user.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -9,8 +10,11 @@ const UserController = {
     actions: {
       async register(ctx: CustomContext) {
         
-        const {email, password }= ctx.params
-        if(!email || !password) {
+        const {email, password, username }= ctx.params
+
+        console.log("@@Params", email, password, username)
+       
+        if(!email || !password || !username) {
             throw new Error ("missing email or password")
         }
 
@@ -21,14 +25,19 @@ const UserController = {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new UserModel({
           email,
+          username,
           password: hashedPassword,
-        });
+        }) as IUser;
   
         await newUser.save();
   
         return { 
                 message: "User registered successfully", 
-                user: newUser 
+                user: {
+                  username: newUser.username,
+                  email: newUser.email,
+                 
+                } 
             };
       },
       async login(ctx: CustomContext<{ email: string; password: string }>) {

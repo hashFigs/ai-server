@@ -5,6 +5,14 @@ const ApiService: ServiceSchema = {
   name: "api",
   mixins: [ApiGateway],
   settings: {
+    cors: {
+      origin: ["http://localhost:4200"], 
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+      exposedHeaders: ["Authorization"],
+      credentials: true, 
+      maxAge: 3600 
+    },
     routes: [
       {
         path: "/",

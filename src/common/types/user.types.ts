@@ -1,17 +1,18 @@
 export interface IUser {
     id: string;
     email: string;
-    name: string;
+    username: string;
     password: string;
   }
   
   export interface IUserLogin {
     email: string;
     password: string;
+
   }
   
   export interface IUserRegister {
-    name: string;
+    username: string;
     email: string;
     password: string;
   }
