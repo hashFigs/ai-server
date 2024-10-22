@@ -42,6 +42,7 @@ const UserController = {
       },
       async login(ctx: CustomContext<{ email: string; password: string }>) {
         const { email, password } = ctx.params;
+        console.log("params", email, password)
   
         const user = await UserModel.findOne({ email });
         if (!user) {
