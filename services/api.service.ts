@@ -19,7 +19,9 @@ const ApiService: ServiceSchema = {
         aliases: {
           "POST /register": "user.register",
           "POST /login": "user.login",
-          "POST /script/create": "scriptGenerator.service.create"
+          "POST /script/create": "scriptGenerator.service.create",
+          "POST /tone/create": "tone.service.create",
+
         }
       }
     ]
