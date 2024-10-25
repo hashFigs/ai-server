@@ -11,7 +11,7 @@ import 'dotenv/config';
 // Create a new service broker
 const broker = new ServiceBroker({
   nodeID: "node-1",
-  transporter: "NATS", // Choose your preferred transporter
+  transporter: "NATS", 
   logger: true,
   hotReload: true
 });

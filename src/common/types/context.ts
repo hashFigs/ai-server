@@ -4,6 +4,8 @@ import { Context as MoleculerContext } from "moleculer";
 interface CustomContext<P = any> extends MoleculerContext<P> {
   meta: {
     userId: string;
+    token?: string;
+    headers?: Record<string, string>; 
   };
 }
 

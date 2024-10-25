@@ -3,6 +3,7 @@ import { IUserRegister } from "../../../common/types/user.types";
 import UserModel, { IUser } from "../model/user.model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { generateToken, verifyToken } from "../../../utils/cryptTokens";
 
 
 const UserController = {
@@ -56,7 +57,9 @@ const UserController = {
         }
   
         // Generate a JWT token
-        const token = jwt.sign({ userId: user._id, email: user.email }, "my_jwt_secret", { expiresIn: "1h" });
+       // const token = jwt.sign({ userId: user._id, email: user.email }, "my_jwt_secret", { expiresIn: "1h" });
+
+        const token = generateToken({ userId: user._id, email: user.email } ,  "1h" )
   
         return { message: "Login successful", token };
       },
