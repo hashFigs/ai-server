@@ -1,0 +1,124 @@
+import CustomContext from "../../../common/types/context";
+import axios from "axios";
+import { describe } from "nats/lib/nats-base-client/parser";
+import { YoutubeTranscript } from "youtube-transcript"; // Correct import if using 'youtube-transcript'
+import YoutubeChannelModel from "../model/youtubeChanel.model";
+
+const baseUrl = process.env.YOUTUBE_API_BASE_URL || "https://www.googleapis.com/youtube/v3";
+const youtubeApiKey = process.env.YOUTUBE_API_KEY_V3 || "missingApiKey"; 
+
+// Helper function to fetch the latest 3 video IDs
+async function fetchLast3videos(channelId: string, youtubeApiKey:string) {
+  try {
+    const searchResponse = await axios.get(`${baseUrl}/search`, {
+      params: {
+        part: "snippet",
+        channelId: channelId,
+        order: "date",
+        maxResults: 3, 
+        type: "video", 
+        key: youtubeApiKey,
+      },
+    });
+    return searchResponse.data.items.map((item: any) => item.id.videoId);
+  } catch (error) {
+    console.error("Failed to fetch last 3 videos:", (error as Error).message);
+    throw new Error("Failed to fetch last 3 videos.");
+  }
+}
+
+async function fetchTranscript(videoId: string) {
+  try {
+    const transcript =  await YoutubeTranscript.fetchTranscript(videoId);
+    
+    const combinedText = transcript
+    .map((segment: { text: string }) => segment.text)
+    .join(" ");
+  
+  return combinedText;
+
+  } catch (error) {
+    console.error(`Failed to fetch transcript for video ID: ${videoId}`, (error as Error).message);
+    return null;
+  }
+}
+
+const YoutubeChannelController = {
+  name: "youtubeChannel.controller",
+  actions: {
+    async create(ctx: CustomContext) {
+      return { message: "youtube Channel" };
+    },
+
+    async fetchChannelData(ctx: CustomContext) {
+      const { handle } = ctx.params;
+      const youtubeApiKey = process.env.YOUTUBE_API_KEY_V3 as string; 
+
+
+      if (!handle) {
+        throw new Error("Channel handle is required");
+      }
+
+      console.log("@@About to call YouTube API:", handle, youtubeApiKey);
+
+      try {
+        // Step 1: Search for the channel by handle
+        const searchResponse = await axios.get(`${baseUrl}/search`, {
+          params: {
+            part: "snippet",
+            type: "channel",
+            q: handle,
+            key: youtubeApiKey,
+          },
+        });
+        console.log("@@AFTER to call YouTube API:");
+
+        if (searchResponse.data.items && searchResponse.data.items.length > 0) {
+          const channelData = searchResponse.data.items[0];
+          const channelId = channelData.id.channelId;
+
+          console.log("@@Channel found:", channelId);
+
+          // Fetch last 3 videos by channel ID
+          const lastVideosId = await fetchLast3videos(channelId, youtubeApiKey);
+          console.log("Last 3 Video IDs:", lastVideosId);
+
+          // Fetch transcripts for each video
+          const transcripts = await Promise.all(
+            lastVideosId.map(async (videoId: string) => {
+              const transcript = await fetchTranscript(videoId);
+              return { videoId, transcript };
+            })
+          );
+          
+
+          const newChannel = new YoutubeChannelModel( {
+              channelId: channelId,
+              handle: handle,
+              title: channelData.snippet.channelTitle,
+              description: channelData.snippet.description,
+              transcripts: transcripts
+
+          })
+          
+          await newChannel.save();
+  
+
+           console.log("Last Channel", newChannel)
+
+          return {
+            channelData,
+            transcripts,
+          };
+        } else {
+          return { message: "No data found for this channel." };
+        }
+      } catch (error) {
+        console.error("Error fetching channel data:", (error as Error).message);
+        throw new Error("Failed to fetch channel data.");
+      }
+    },
+  },
+};
+
+export default YoutubeChannelController;

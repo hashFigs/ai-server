@@ -35,7 +35,9 @@
     "moleculer-db-adapter-mongo": "^0.4.15",
     "moleculer-web": "^0.10.4",
     "mongoose": "^8.7.1",
-    "nats": "^2.7.1"
+    "nats": "^2.7.1",
+    "youtube-transcript": "^1.2.1",
+    "youtube-transcript-api": "^1.1.2"
   },
   "engines": {
     "node": ">= 16.x.x"

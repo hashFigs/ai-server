@@ -23,6 +23,8 @@ const ApiService: ServiceSchema = {
           "POST /login": "user.login",
           "POST /script/create": "scriptGenerator.service.create",
           "POST /tone/create": "tone.service.create",
+          "POST /youtube/create": "youtubeChannel.create",
+          "POST /youtube/fetch-channel-data": "youtubeChannel.fetchChannelData", 
         },
         onBeforeCall(ctx:CustomContext, route: any, req: IncomingRequest, res: GatewayResponse) {
           const authHeader = req.headers["authorization"];

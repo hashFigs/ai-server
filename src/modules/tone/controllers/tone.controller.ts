@@ -22,7 +22,7 @@ const ToneController = {
       }
 
       const authPayload:JwtPayload= verifyToken(authHeader)
-      console.log("@@authPayload", authPayload)    
+      
       try {
         const apiKey = process.env.OPENAI_API_KEY;
 
