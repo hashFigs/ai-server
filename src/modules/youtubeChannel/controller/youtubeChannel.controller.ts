@@ -49,6 +49,24 @@ const YoutubeChannelController = {
       return { message: "youtube Channel" };
     },
 
+    async getChannels(ctx: CustomContext) {
+       const { userId } = ctx.meta;
+       
+       try {
+        
+        const channels = await YoutubeChannelModel.find({ user: userId })
+          .populate('user') 
+          .exec();
+    
+        return channels; 
+      } catch (error) {
+        console.error("Error fetching channels:", error);
+        throw new Error("Could not retrieve channels"); 
+      }
+
+
+    },
+
     async fetchChannelData(ctx: CustomContext) {
       const { handle } = ctx.params;
       const {token, userId} = ctx.meta;
@@ -93,7 +111,8 @@ const YoutubeChannelController = {
               handle: handle,
               title: channelData.snippet.channelTitle,
               description: channelData.snippet.description,
-              transcripts: transcripts
+              transcripts: transcripts, 
+              user: userId
 
           })
           
