@@ -7,13 +7,11 @@ const ScriptGeneratorController = {
   
   actions: {
     async create(ctx: CustomContext): Promise<{ message: string; script: string }> {
-
      const  {title, language, selectedCategory, formatType, videoTopic, audienceDescription, selectedVoice} = ctx.params;
 
      /*  if (!topic || !length || !language) {
         throw new Error("Missing parameters");
       } */
-
       try {
         const apiKey = process.env.OPENAI_API_KEY;
 
@@ -41,14 +39,14 @@ const ScriptGeneratorController = {
         );
         
 
-        console.log(JSON.stringify(response.data, null, 2));
-        console.log(response.data.choices[0].message.content);
+       // console.log(JSON.stringify(response.data, null, 2));
+        //console.log(response.data.choices[0].message.content);
 
 
 
         // Safely get the script content from the API response
         const scriptContent = response.data.choices[0].message.content ?? "No script generated";
-
+        console.log("Script generated successfully")
         return {
           message: "Script generated successfully",
           script: scriptContent

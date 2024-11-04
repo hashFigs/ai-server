@@ -7,7 +7,6 @@ import YoutubeChannelModel from "../model/youtubeChanel.model";
 const baseUrl = process.env.YOUTUBE_API_BASE_URL || "https://www.googleapis.com/youtube/v3";
 const youtubeApiKey = process.env.YOUTUBE_API_KEY_V3 || "missingApiKey"; 
 
-// Helper function to fetch the latest 3 video IDs
 async function fetchLast3videos(channelId: string, youtubeApiKey:string) {
   try {
     const searchResponse = await axios.get(`${baseUrl}/search`, {
@@ -52,14 +51,15 @@ const YoutubeChannelController = {
 
     async fetchChannelData(ctx: CustomContext) {
       const { handle } = ctx.params;
+      const {token, userId} = ctx.meta;
+      console.log("@@userInfo", token, userId)
+
       const youtubeApiKey = process.env.YOUTUBE_API_KEY_V3 as string; 
 
 
       if (!handle) {
         throw new Error("Channel handle is required");
       }
-
-      console.log("@@About to call YouTube API:", handle, youtubeApiKey);
 
       try {
         // Step 1: Search for the channel by handle
@@ -71,17 +71,13 @@ const YoutubeChannelController = {
             key: youtubeApiKey,
           },
         });
-        console.log("@@AFTER to call YouTube API:");
 
         if (searchResponse.data.items && searchResponse.data.items.length > 0) {
           const channelData = searchResponse.data.items[0];
           const channelId = channelData.id.channelId;
 
-          console.log("@@Channel found:", channelId);
 
-          // Fetch last 3 videos by channel ID
           const lastVideosId = await fetchLast3videos(channelId, youtubeApiKey);
-          console.log("Last 3 Video IDs:", lastVideosId);
 
           // Fetch transcripts for each video
           const transcripts = await Promise.all(
@@ -102,9 +98,7 @@ const YoutubeChannelController = {
           })
           
           await newChannel.save();
-  
-
-           console.log("Last Channel", newChannel)
+ //          console.log("Last Channel", newChannel)
 
           return {
             channelData,

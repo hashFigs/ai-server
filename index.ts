@@ -32,5 +32,7 @@ broker.createService(YoutubeModule)
 // Start the broker
 broker.start().then(() => {
   broker.repl(); 
+  const apiService = broker.getLocalService("api");
+  console.log("Registered routes:", apiService.settings.routes);
 
 });
