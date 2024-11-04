@@ -1,10 +1,7 @@
 import { ServiceSchema } from "moleculer";
 import ApiGateway, { IncomingRequest, GatewayResponse } from "moleculer-web";
 import CustomContext from "../src/common/types/context";
-import jwt from "jsonwebtoken";
 import {verifyToken} from "../src/utils/cryptTokens"
-
-// Define the custom authorization function
 
 
 const ApiService: ServiceSchema = {
@@ -40,7 +37,6 @@ const ApiService: ServiceSchema = {
           "POST /youtube/fetch-channel-data": "youtubeChannel.fetchChannelData",
         },
         onBeforeCall(ctx: CustomContext, route: any, req: IncomingRequest, res: GatewayResponse) {
-          console.log("Received request at /api route");
           const authHeader = req.headers["authorization"];
           if (authHeader && authHeader.startsWith("Bearer ")) {
             ctx.meta.token = authHeader.slice(7);
@@ -51,16 +47,13 @@ const ApiService: ServiceSchema = {
   },
   methods: {
     authorize(ctx:CustomContext, route:any, req:IncomingRequest) {
-      console.log("Inside customAuthorization method!");
       const token = ctx.meta.token;
 
-      console.log("Inside authorization!!", token);
        if (!token) {
         throw new ApiGateway.Errors.UnAuthorizedError("NO_TOKEN", {
           message: "Authorization token is missing",
         });
       }
-  
       try {
         const decoded = verifyToken(token)
          ctx.meta.userId = decoded.userId;  

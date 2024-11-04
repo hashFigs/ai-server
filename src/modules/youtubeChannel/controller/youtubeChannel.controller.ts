@@ -52,7 +52,7 @@ const YoutubeChannelController = {
     async fetchChannelData(ctx: CustomContext) {
       const { handle } = ctx.params;
       const {token, userId} = ctx.meta;
-      console.log("@@userInfo", token, userId)
+     
 
       const youtubeApiKey = process.env.YOUTUBE_API_KEY_V3 as string; 
 
