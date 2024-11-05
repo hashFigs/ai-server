@@ -33,6 +33,7 @@ const ApiService: ServiceSchema = {
         aliases: {
           "POST /script/create": "scriptGenerator.service.create",
           "POST /tone/create": "tone.service.create",
+          "GET /tone/": "tone.service.getAll",
           "POST /youtube/create": "youtubeChannel.create",
           "POST /youtube/fetch-channel-data": "youtubeChannel.fetchChannelData",
           "GET /youtube/channels": "youtubeChannel.getChannels",

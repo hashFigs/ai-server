@@ -1,6 +1,5 @@
 import CustomContext from "../../../common/types/context";
 import axios from "axios";
-import { describe } from "nats/lib/nats-base-client/parser";
 import { YoutubeTranscript } from "youtube-transcript"; // Correct import if using 'youtube-transcript'
 import YoutubeChannelModel from "../model/youtubeChanel.model";
 

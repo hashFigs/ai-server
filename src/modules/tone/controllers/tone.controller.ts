@@ -2,8 +2,7 @@ import CustomContext from "../../../common/types/context";
 import axios from "axios";
 import { parseResponseToJSON } from "../../../utils/parseOpenApi"
 import ToneModel from "../model/tone.model";
-import { verifyToken } from "../../../utils/cryptTokens";
-import { JwtPayload } from "../../../common/types/globalTypes"
+
 
 
 const ToneController = {
@@ -11,18 +10,7 @@ const ToneController = {
   
   actions: {
     async create(ctx: CustomContext): Promise<{ message: string; tone: any, tonePreview: string; }> {
-  
-     const  {inputText} = ctx.params;
-      
-     const authHeader = ctx.meta?.token;
-
-
-      if (!authHeader) {
-          throw new Error("Authorization header is missing.");
-      }
-
-      const authPayload:JwtPayload= verifyToken(authHeader)
-      
+     const  {inputText} = ctx.params;  
       try {
         const apiKey = process.env.OPENAI_API_KEY;
 
@@ -64,17 +52,12 @@ const ToneController = {
         );
         
 
-        console.log(JSON.stringify(response.data, null, 2));
-        console.log(response.data.choices[0].message.content);
-
-
-
         // Safely get the tone content from the API response
         const toneContent = response.data.choices[0].message.content ?? "No script generated";
         const jsonTone = parseResponseToJSON(toneContent);
 
         const newTone = new ToneModel({
-          userId: authPayload.userId,
+          userId: ctx.meta.userId,
           inputSample: inputText,
           tone: jsonTone.tone,
           wordChoice: jsonTone.wordChoice,
@@ -136,16 +119,10 @@ const ToneController = {
              }
            }
          );
-         
- 
-         console.log(JSON.stringify(response.data, null, 2));
-         console.log(response.data.choices[0].message.content);
- 
+        
          // Safely get the tone content from the API response
          const toneContent = response.data.choices[0].message.content ?? "No script generated";
      
- 
- 
          return {
            message: "Script generated successfully",
            tonePreview: toneContent
@@ -155,8 +132,17 @@ const ToneController = {
          throw new Error("Failed to generate script");
        }
      },
-     
-     
+     async getAll(ctx: CustomContext): Promise<{ message: string; tone: any }> {
+      
+      const {userId} = ctx.meta
+      const tones = await ToneModel.find({userId: userId})
+
+
+      return({
+        "message": "success",
+        "tone": tones,
+      })
+     }
   },
   
 

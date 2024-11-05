@@ -46,6 +46,7 @@ const UserController = {
         console.log("params", email, password)
   
         const user = await UserModel.findOne({ email });
+        
         if (!user) {
           throw new Error("User not found");
         }
@@ -56,9 +57,6 @@ const UserController = {
           throw new Error("Invalid password");
         }
   
-        // Generate a JWT token
-       // const token = jwt.sign({ userId: user._id, email: user.email }, "my_jwt_secret", { expiresIn: "1h" });
-
         const token = generateToken({ userId: user._id, email: user.email } ,  "1h" )
   
         return { message: "Login successful", token };
